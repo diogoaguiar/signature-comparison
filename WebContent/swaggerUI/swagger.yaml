@@ -1,0 +1,99 @@
+# Example YAML to get you started quickly.
+# Be aware that YAML has indentation based scoping.
+# Code completion support is available so start typing for available options.
+swagger: '2.0'
+
+# This is your document metadata
+info:
+  version: "1.0.0"
+  title: Signature Comparison Module API
+  
+basePath: /SignatureComparisonModule/jaxrs
+
+# Describe your paths here
+paths:
+  /getClientSignaturesList:
+    get:
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int32
+        510:
+          description: Couldn't connect to the database
+  
+  /getCheckSignaturesList:
+    get:
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int32
+        510:
+          description: Couldn't connect to the database
+  
+  /getSignatureImage:
+    get:
+      parameters:
+      -
+        name: type
+        in: query
+        description: Type of image that the ID referes to. (signature of the client or signature on the check)
+        required: true
+        type: string
+        enum:
+          - client
+          - check
+      -
+        name: id
+        in: query
+        description: ID of the image to be returned
+        required: true
+        type: integer
+        format: int32
+      responses:
+        200:
+          description: Returns the image requeted
+          schema:
+            title: Byte's Array
+            type: array
+            items:
+              type: integer
+              format: byte
+        404:
+          description: Image not found
+        500:
+          description: Invalid **type** passed. Type must be either *client* or *check*
+    
+  /compare:
+    get:
+      parameters:
+      -
+        name: clientSignatureID
+        in: query
+        description: ID of the client's signature to be compared
+        required: true
+        type: integer
+        format: int32
+      -
+        name: checkSignatureID
+        in: query
+        description: ID of the check's signature to be compared
+        required: true
+        type: integer
+        format: int32
+      
+      responses:
+        200:
+          description: Comparison was successful. The comparison score is returned.
+          schema:
+            type: integer
+            format: int32
+        500:
+          description: Comparison failed.
