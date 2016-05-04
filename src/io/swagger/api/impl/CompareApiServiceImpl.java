@@ -24,7 +24,7 @@ public class CompareApiServiceImpl extends CompareApiService {
     public Response compareGet(Integer clientSignatureID, Integer checkSignatureID, SecurityContext securityContext)
     throws NotFoundException {
         // do some magic!
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+        return new middleware.api.CompareApiServiceImpl().compareGet(clientSignatureID, checkSignatureID, securityContext);
     }
     
 }

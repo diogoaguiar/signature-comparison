@@ -24,7 +24,7 @@ public class GetSignatureImageApiServiceImpl extends GetSignatureImageApiService
     public Response getSignatureImageGet(String type, Integer id, SecurityContext securityContext)
     throws NotFoundException {
         // do some magic!
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+        return new middleware.api.GetSignatureImageApiServiceImpl().getSignatureImageGet(type, id, securityContext);
     }
     
 }

@@ -24,7 +24,7 @@ public class GetCheckSignaturesListApiServiceImpl extends GetCheckSignaturesList
     public Response getCheckSignaturesListGet(SecurityContext securityContext)
     throws NotFoundException {
         // do some magic!
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+        return new middleware.api.GetCheckSignaturesListApiServiceImpl().getCheckSignaturesListGet(securityContext);
     }
     
 }
