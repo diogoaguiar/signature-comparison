@@ -5,8 +5,8 @@ swagger: '2.0'
 
 # This is your document metadata
 info:
-  version: "1.0.0"
-  title: Signature Comparison Module API
+  version: "1.0.2"
+  title: Signature Compare Module API
   
 basePath: /SignatureComparisonModule/jaxrs
 
@@ -20,12 +20,11 @@ paths:
           schema:
             type: array
             items:
-              type: integer
-              format: int32
-        510:
+              type: string
+        500:
           description: Couldn't connect to the database
   
-  /getCheckSignaturesList:
+  /getChecksList:
     get:
       responses:
         200:
@@ -33,61 +32,56 @@ paths:
           schema:
             type: array
             items:
-              type: integer
-              format: int32
-        510:
+              type: string
+        500:
           description: Couldn't connect to the database
   
-  /getSignatureImage:
+  /getImage:
     get:
       parameters:
       -
         name: type
         in: query
-        description: Type of image that the ID referes to. (signature of the client or signature on the check)
+        description: Type of image. (client's signature or check)
         required: true
         type: string
         enum:
           - client
           - check
       -
-        name: id
+        name: name
         in: query
-        description: ID of the image to be returned
+        description: Name of the image to be returned
         required: true
-        type: integer
-        format: int32
+        type: string
       responses:
         200:
-          description: Returns the image requeted
+          description: Returns the requested image.
           schema:
-            title: Byte's Array
+            title: Base64 string
             type: array
             items:
-              type: integer
-              format: byte
-        404:
-          description: Image not found
+              type: string
         500:
-          description: Invalid **type** passed. Type must be either *client* or *check*
+          description: Invalid **type** passed. Type must be either *client* or *check*.
+        501:
+          description: Image missing from database.
     
   /compare:
     get:
       parameters:
       -
-        name: clientSignatureID
+        name: clientSignatureImageName
         in: query
-        description: ID of the client's signature to be compared
+        description: Name of the client's signature image
         required: true
-        type: integer
-        format: int32
+        type: string
       -
-        name: checkSignatureID
+        name: checkImageName
         in: query
-        description: ID of the check's signature to be compared
+        description: Name of the check's image
         required: true
-        type: integer
-        format: int32
+        type: string
       
       responses:
         200:

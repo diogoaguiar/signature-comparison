@@ -26,7 +26,7 @@ import javax.ws.rs.*;
 
 
 @io.swagger.annotations.Api(description = "the compare API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-04-28T17:19:59.707Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-09T02:54:52.433Z")
 public class CompareApi  {
    private final CompareApiService delegate = CompareApiServiceFactory.getCompareApi();
 
@@ -39,10 +39,10 @@ public class CompareApi  {
         @io.swagger.annotations.ApiResponse(code = 200, message = "Comparison was successful. The comparison score is returned.", response = Integer.class),
         @io.swagger.annotations.ApiResponse(code = 500, message = "Comparison failed.", response = Integer.class) })
     public Response compareGet(
-        @ApiParam(value = "ID of the client's signature to be compared",required=true) @QueryParam("clientSignatureID") Integer clientSignatureID,
-        @ApiParam(value = "ID of the check's signature to be compared",required=true) @QueryParam("checkSignatureID") Integer checkSignatureID,
+        @ApiParam(value = "Name of the client's signature image",required=true) @QueryParam("clientSignatureImageName") String clientSignatureImageName,
+        @ApiParam(value = "Name of the check's image",required=true) @QueryParam("checkImageName") String checkImageName,
         @Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.compareGet(clientSignatureID,checkSignatureID,securityContext);
+        return delegate.compareGet(clientSignatureImageName,checkImageName,securityContext);
     }
 }

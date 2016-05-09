@@ -17,14 +17,13 @@ import com.sun.jersey.multipart.FormDataParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-04-28T17:19:59.707Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-09T01:24:47.522Z")
 public class CompareApiServiceImpl extends CompareApiService {
     
     @Override
-    public Response compareGet(Integer clientSignatureID, Integer checkSignatureID, SecurityContext securityContext)
+    public Response compareGet(String clientSignatureImageName, String checkImageName, SecurityContext securityContext)
     throws NotFoundException {
-        // do some magic!
-        return new middleware.api.CompareApiServiceImpl().compareGet(clientSignatureID, checkSignatureID, securityContext);
+        return new middleware.api.CompareApiServiceImpl().compareGet(clientSignatureImageName, checkImageName, securityContext);
     }
     
 }

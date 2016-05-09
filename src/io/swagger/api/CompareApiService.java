@@ -17,10 +17,10 @@ import com.sun.jersey.multipart.FormDataParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-04-28T17:19:59.707Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-09T02:54:52.433Z")
 public abstract class CompareApiService {
   
-      public abstract Response compareGet(Integer clientSignatureID,Integer checkSignatureID,SecurityContext securityContext)
+      public abstract Response compareGet(String clientSignatureImageName,String checkImageName,SecurityContext securityContext)
       throws NotFoundException;
   
 }

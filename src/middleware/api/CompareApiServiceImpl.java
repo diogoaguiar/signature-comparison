@@ -7,9 +7,9 @@ import io.swagger.api.ApiResponseMessage;
 import io.swagger.api.NotFoundException;
 
 public class CompareApiServiceImpl {
-	public Response compareGet(Integer clientSignatureID, Integer checkSignatureID, SecurityContext securityContext)
-		    throws NotFoundException {
-		        // do some magic!
-		        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
-		    }
+	public Response compareGet(String clientSignatureImageName, String checkImageName,
+			SecurityContext securityContext) {
+		
+		return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+	}
 }

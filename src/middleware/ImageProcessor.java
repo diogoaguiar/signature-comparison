@@ -5,7 +5,11 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -14,6 +18,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
@@ -132,15 +137,13 @@ public class ImageProcessor {
 	 * @return BufferedImage
 	 */
 	public static BufferedImage toBufferedImage(Mat matrix) {
-		int type = BufferedImage.TYPE_BYTE_GRAY;
-		if (matrix.channels() > 1) {
-			type = BufferedImage.TYPE_3BYTE_BGR;
-		}
+		int type = (matrix.channels() > 1) ? BufferedImage.TYPE_3BYTE_BGR : BufferedImage.TYPE_BYTE_GRAY;
+
 		int bufferSize = matrix.channels() * matrix.cols() * matrix.rows();
 		byte[] buffer = new byte[bufferSize];
 		matrix.get(0, 0, buffer); // get all the pixels
 		BufferedImage image = new BufferedImage(matrix.cols(), matrix.rows(), type);
-		final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+		final byte[] targetPixels = toBytes(image);
 		System.arraycopy(buffer, 0, targetPixels, 0, buffer.length);
 		return image;
 	}
@@ -152,8 +155,32 @@ public class ImageProcessor {
 	 */
 	public static Mat toMat(BufferedImage image) {
 		Mat matImg = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
-		matImg.put(0, 0, ((DataBufferByte) image.getRaster().getDataBuffer()).getData());
+		matImg.put(0, 0, toBytes(image));
 		return matImg;
+	}
+	
+	public static byte[] toBytes(BufferedImage image) {
+		return ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+	}
+	
+	public static byte[] toBytes(Mat image) {
+		return toBytes(toBufferedImage(image.clone()));
+	}
+	
+	public static BufferedImage toBufferedImage(byte[] imageData) {
+	    ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
+	    BufferedImage image = null;
+	    try {
+	        image = ImageIO.read(bais);
+	        new ImageProcessor().show(ImageIO.read(bais));
+	    } catch (IOException e) {
+	        Error.report(e.getMessage());
+	    }
+	    return image;
+	}
+	
+	public static Mat toMat(byte[] imageData) {
+		return toMat(toBufferedImage(imageData));
 	}
 
 	/**
@@ -192,4 +219,42 @@ public class ImageProcessor {
 			resize(image, width, height);
 		}
 	}
+	
+	public static void toGray(Mat image) {
+		Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
+	}
+	
+	/**
+     * Decode string to image
+     * @param imageString The string to decode
+     * @return decoded image
+     */
+    public static BufferedImage toBufferedImage(String base64String) {
+        BufferedImage image = null;
+        try {
+        	byte[] imageByte = Base64.decodeBase64(base64String);
+            ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
+            image = ImageIO.read(bis);
+            bis.close();
+        } catch (Exception e) {
+            Error.report(e.getMessage());
+        }
+        return image;
+    }
+    
+    public static byte[] toByteArray(String base64String) {
+    	return Base64.decodeBase64(base64String);
+    }
+
+    /**
+     * Encode image to string
+     * @param image The image to encode
+     * @param type jpeg, bmp, ...
+     * @return encoded string
+     */
+    public static String toBase64String(BufferedImage image) {
+		byte[] imageData = toBytes(image);								//Convert to byte array
+		String base64String = Base64.encodeBase64String(imageData);		//Encode to base 64 string
+        return base64String;
+    }
 }

@@ -19,147 +19,227 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 public class Comparison {
-	static {System.loadLibrary(Core.NATIVE_LIBRARY_NAME);}
+	static {
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+	}
 
-	private Mat templ;
-	private Mat img;
-	
+	private Mat img1; // Image 1
+	private Mat img2; // Image 2
+	private float threshold; // Limit difference between descriptors to be
+								// considered
+	private boolean debugMode; // Prints debuging information and shows visuals
+
+	// private Size normMinSize;
+	private Size normMaxSize;
+
 	/**
 	 * Constructor for local images.
 	 * 
-	 * @param clientSgnatureImagePath - path for the client's signature image
-	 * @param checkImagePath - path for the check's image
-	 * */
-	public Comparison(String clientSgnatureImagePath, String checkImagePath) {
-		templ = Imgcodecs.imread(clientSgnatureImagePath);
-		img = Imgcodecs.imread(checkImagePath);
-		
-		//Check if images were successfully loaded
-		if(templ.empty() || img.empty()) {
+	 * @param clientSgnatureImagePath
+	 *            - path for the client's signature image
+	 * @param checkImagePath
+	 *            - path for the check's image
+	 */
+	public Comparison(String image1, String image2) {
+		img1 = Imgcodecs.imread(image1);
+		img2 = Imgcodecs.imread(image2);
+
+		// Check if images were successfully loaded
+		if (img1.empty() || img2.empty()) {
 			Error.report("Couldn't load file.");
 		}
+
+		init();
 	}
-	
+
 	/**
 	 * Constructor for buffered images.
 	 * 
-	 * @param clientSgnatureImage - image with the client's signature image
-	 * @param checkImage - image with the check's image
-	 * */
-	public Comparison(BufferedImage clientSgnatureImage, BufferedImage checkImage) {
-		templ = new Mat();
-		templ.put(0, 0, ((DataBufferByte)clientSgnatureImage.getRaster().getDataBuffer()).getData());
-		//img = Imgcodecs.imread(checkImage);
+	 * @param image1
+	 *            - image with the client's signature image
+	 * @param image2
+	 *            - image with the check's image
+	 */
+	public Comparison(BufferedImage image1, BufferedImage image2) {
+		// Convert images to Mat object
+		img1 = ImageProcessor.toMat(image1);
+		img2 = ImageProcessor.toMat(image2);
+
+		init();
 	}
-	
-	public void compare(String inFile, String templateFile) {
-		compare(inFile, templateFile, false, false);
+
+	/**
+	 * Initialize parameters and variables.
+	 */
+	private void init() {
+		// normMinSize = new Size(200, 50);
+		normMaxSize = new Size(800, 800);
+		debugMode = true;
+		threshold = 50;
+
+		normalize(img1);
+		normalize(img2);
 	}
 
-	public void compare(String inFile, String templateFile, boolean drawKP, boolean drawFilteredMatches) {
+	/**
+	 * Prepare an image for comparison.
+	 * 
+	 * @param image
+	 *            to be normalized (Mat)
+	 */
+	public void normalize(Mat image) {
+		// Convert to gray
+		ImageProcessor.toGray(image);
 
-		//Import images
-		Mat img = Imgcodecs.imread(inFile);
-		Mat templ = Imgcodecs.imread(templateFile);
-
-		//Convert to gray
-		Imgproc.cvtColor(img, img, Imgproc.COLOR_RGB2GRAY);
-		Imgproc.cvtColor(templ, templ, Imgproc.COLOR_RGB2GRAY);
-
-		//Keypoints
-		FeatureDetector fd = FeatureDetector.create(FeatureDetector.BRISK);
-		final MatOfKeyPoint imgKP = new MatOfKeyPoint();
-		final MatOfKeyPoint templKP = new MatOfKeyPoint();
-
-		fd.detect(img, imgKP);
-		fd.detect(templ, templKP);
-
-		System.out.println("Image KeyPoints: " + imgKP.size());
-		System.out.println("Template KeyPoints: " + templKP.size());
-
-		//Draw keypoints
-		if(drawKP) {
-			Mat imgKPDraw = img.clone();
-			Mat templKPDraw = templ.clone();
-
-			Features2d.drawKeypoints(img, imgKP, imgKPDraw);
-			Features2d.drawKeypoints(templ, templKP, templKPDraw);
-			
-			new ImageProcessor().show(imgKPDraw);
-			new ImageProcessor().show(templKPDraw);
-
-			try {
-				System.in.read();
-			} catch (Exception e) {
-				
-			}
+		// Resize
+		if (image.size().width > normMaxSize.width) {
+			ImageProcessor.resizeWidth(image, normMaxSize.width, true);
 		}
-		
-		//Descriptors
-		Mat imgDescriptors = new Mat();
-		Mat templDescriptors = new Mat();
+		if (image.size().height > normMaxSize.height) {
+			ImageProcessor.resizeHeight(image, normMaxSize.height, true);
+		}
+	}
+
+	/**
+	 * Compare base image with the template with the default settings
+	 */
+	public double compare() {
+		// Keypoints
+		FeatureDetector fd = FeatureDetector.create(FeatureDetector.BRISK);
+		MatOfKeyPoint img1KP = new MatOfKeyPoint();
+		MatOfKeyPoint img2KP = new MatOfKeyPoint();
+
+		fd.detect(img1, img1KP);
+		fd.detect(img2, img2KP);
+
+		Mat queryImg, trainImg;
+		MatOfKeyPoint queryKP, trainKP;
+
+		if (img2KP.size().height > img1KP.size().height) {
+			queryImg = img2;
+			trainImg = img1;
+			queryKP = img2KP;
+			trainKP = img1KP;
+		} else {
+			queryImg = img1;
+			trainImg = img2;
+			queryKP = img1KP;
+			trainKP = img2KP;
+		}
+
+		System.out.println("QueryImage KeyPoints: " + queryKP.size());
+		System.out.println("TrainImage KeyPoints: " + trainKP.size());
+
+		// Draw keypoints
+		if (debugMode) {
+			// Draw Keypoints
+			Mat queryKPDraw = queryImg.clone();
+			Mat trainKPDraw = trainImg.clone();
+
+			Features2d.drawKeypoints(queryImg, queryKP, queryKPDraw);
+			Features2d.drawKeypoints(trainImg, trainKP, trainKPDraw);
+
+			new ImageProcessor().show(queryKPDraw);
+			new ImageProcessor().show(trainKPDraw);
+		}
+
+		// Descriptors
+		Mat queryDescriptors = new Mat();
+		Mat trainDescriptors = new Mat();
 
 		DescriptorExtractor extractor = DescriptorExtractor.create(DescriptorExtractor.BRISK);
-		extractor.compute(img, imgKP, imgDescriptors);
-		extractor.compute(templ, templKP, templDescriptors);
+		extractor.compute(queryImg, queryKP, queryDescriptors);
+		extractor.compute(trainImg, trainKP, trainDescriptors);
 
-		System.out.println("Image Descriptors: " + imgDescriptors.size());
-		System.out.println("Template Descriptors: " + templDescriptors.size());
+		System.out.println("Query Descriptors: " + queryDescriptors.size());
+		System.out.println("Train Descriptors: " + trainDescriptors.size());
 
-		//Descriptors matches
+		// Descriptors matches
 		MatOfDMatch matches = new MatOfDMatch();
 
 		DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMINGLUT);
-		matcher.match(imgDescriptors, templDescriptors, matches);
+		matcher.match(queryDescriptors, trainDescriptors, matches);
 
 		System.out.println("Num of matches: " + matches.size());
 
-		//Best matches
+		// Best matches
 		List<DMatch> matchesList = matches.toList();
 		List<DMatch> bestMatches = new ArrayList<DMatch>();
-		int numMatches = 4817;
-		float limit = 0;
-		
-		Collections.sort(matchesList, new Comparator<DMatch>(){
+
+		Collections.sort(matchesList, new Comparator<DMatch>() {
 			@Override
 			public int compare(DMatch a, DMatch b) {
 				return (a.distance < b.distance) ? -1 : (a.distance == b.distance) ? 0 : 1;
 			}
 		});
-		
-		//System.out.println(matchesList.toString());
-		
-		for(int i = 0; bestMatches.size() < numMatches; i++) {
+
+		// System.out.println(matchesList.toString());
+		for (int i = 0; i < matchesList.size(); i++) {
 			float dist = matchesList.get(i).distance;
-			
-			if(dist <= limit) {
+
+			if (dist <= threshold) {
 				bestMatches.add(matchesList.get(i));
 			} else {
-				System.out.println("Not enought matches withing the threshold. (" + i + ")");
-				return;
+				//System.out.println("Not enought matches withing the threshold. (" + i + ")");
+				break;
 			}
 		}
+		System.out.println("Found " + bestMatches.size() + " matches from a total of " + (int)trainDescriptors.size().height + " possibilities.\n"
+				+ "Match rate is of " + (float)(((double)bestMatches.size()/trainDescriptors.size().height)*100) + "%.");
 
-	    System.out.println("Filtered matches: " + bestMatches.size());
-	    System.out.println(bestMatches.toString());
-	    
-	    System.out.println("Match found");
+		//System.out.println(bestMatches.toString());
 
-		if(drawFilteredMatches) {
+		if (bestMatches.size() >= threshold) {
+			System.out.println("Match found (" + bestMatches.size() + ")");
+		}
+
+		if (debugMode) {
+			// Draw matches
 			MatOfDMatch matchesFiltered = new MatOfDMatch();
 			matchesFiltered.fromList(bestMatches);
-			
+
 			Mat outImage = new Mat();
 
-			Features2d.drawMatches(img, imgKP, templ, templKP, matchesFiltered, outImage);
-			
-			new ImageProcessor().show(outImage);
+			Features2d.drawMatches(queryImg, queryKP, trainImg, trainKP, matchesFiltered, outImage);
 
-			try {
-				System.in.read();
-			} catch (Exception e) {
-				
-			}
+			new ImageProcessor().show(outImage);
 		}
+
+		return 0;
+	}
+
+	/*
+	 * Settes and Getters
+	 */
+	public void setDebugMode(boolean mode) {
+		debugMode = mode;
+	}
+
+	public boolean getDebugMode() {
+		return debugMode;
+	}
+
+	public void setThreshold(int value) {
+		threshold = value;
+	}
+
+	public float getThreshold() {
+		return threshold;
+	}
+
+	public void setCheckImage(String path) {
+		img2 = Imgcodecs.imread(path);
+	}
+
+	public void setCheckImage(BufferedImage image) {
+		img2 = ImageProcessor.toMat(image);
+	}
+
+	public void setSignatureImage(String path) {
+		img1 = Imgcodecs.imread(path);
+	}
+
+	public void setSignatureImage(BufferedImage image) {
+		img1 = ImageProcessor.toMat(image);
 	}
 }

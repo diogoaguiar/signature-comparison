@@ -26,7 +26,7 @@ import javax.ws.rs.*;
 
 
 @io.swagger.annotations.Api(description = "the getClientSignaturesList API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-04-28T17:19:59.707Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-09T02:54:52.433Z")
 public class GetClientSignaturesListApi  {
    private final GetClientSignaturesListApiService delegate = GetClientSignaturesListApiServiceFactory.getGetClientSignaturesListApi();
 
@@ -34,10 +34,10 @@ public class GetClientSignaturesListApi  {
     
     
     
-    @io.swagger.annotations.ApiOperation(value = "", notes = "", response = Integer.class, responseContainer = "List", tags={  })
+    @io.swagger.annotations.ApiOperation(value = "", notes = "", response = String.class, responseContainer = "List", tags={  })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "Ok", response = Integer.class, responseContainer = "List"),
-        @io.swagger.annotations.ApiResponse(code = 510, message = "Couldn't connect to the database", response = Integer.class, responseContainer = "List") })
+        @io.swagger.annotations.ApiResponse(code = 200, message = "Ok", response = String.class, responseContainer = "List"),
+        @io.swagger.annotations.ApiResponse(code = 500, message = "Couldn't connect to the database", response = String.class, responseContainer = "List") })
     public Response getClientSignaturesListGet(
         @Context SecurityContext securityContext)
     throws NotFoundException {
