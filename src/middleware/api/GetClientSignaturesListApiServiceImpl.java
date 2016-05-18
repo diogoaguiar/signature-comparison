@@ -1,9 +1,12 @@
 package middleware.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+
+import org.bson.Document;
 
 import io.swagger.api.ApiResponseMessage;
 import io.swagger.api.NotFoundException;
@@ -11,15 +14,17 @@ import middleware.DBManager;
 
 public class GetClientSignaturesListApiServiceImpl {
 	public Response getClientSignaturesListGet(SecurityContext securityContext) throws NotFoundException {
-
-		DBManager dbm = new DBManager("localhost", 27017, "scm_db");
+		DBManager dbm = new DBManager();
 		
-		List<String> checkList = dbm.getSignatureList();
-		String response = "{";
-		for(String s : checkList) {
-			response += "{'name' : '" + s + "'}";
+		List<Document> signatureList = dbm.getSignatureList();
+		List<Document> signatureListFiltered = new ArrayList<Document>();
+		for(Document d : signatureList) {
+			Document tempDoc = new Document();
+			tempDoc.put("name", d.get("name"));
+			signatureListFiltered.add(tempDoc);
 		}
-		response += "}";
-		return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, response)).build();
+		Document doc = new Document();
+		doc.put("data", signatureListFiltered);
+		return Response.ok(doc.toJson()).build();
 	}
 }

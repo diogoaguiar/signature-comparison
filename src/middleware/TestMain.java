@@ -1,9 +1,10 @@
 package middleware;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
+import java.nio.file.Files;
 
 import javax.imageio.ImageIO;
 
@@ -21,17 +22,32 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
 public class TestMain {
-	static {System.loadLibrary(Core.NATIVE_LIBRARY_NAME);}
+	static {
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+	}
 
 	public static void main(String[] args) {
-		//comparisonTest();
+		/*
+		 * String path = "C:\\Users\\Diogo\\Desktop\\img\\mediumcheck.jpg"; Img
+		 * temp = new Img(); temp.setImageByPath(path); Img test = new
+		 * Img(temp.getMat()); test.show();
+		 */
 	}
-	
+
 	public static void comparisonTest() {
 		String rootPath = "C:\\Users\\Diogo\\Desktop\\img\\";
-		String signaturePath = rootPath + "sig1a.jpg";
-		String checkPath = rootPath + "sig2aa.jpg";
+		String signaturePath = rootPath + "largesignature2.jpg";
+		String checkPath = rootPath + "largecheck.jpg";
 		Comparison comp = new Comparison(signaturePath, checkPath);
-		comp.compare();
+		comp.setDebugMode(true);
+		comp.featureMatching();
+	}
+
+	public static void insertTest() {
+		String path = "C:\\Users\\Diogo\\Desktop\\img\\largecheck.jpg";
+		DBManager dbm = new DBManager();
+		Img image = new Img();
+		image.setImageByPath(path);
+		dbm.insertImage("checks", image, "l-chek123");
 	}
 }

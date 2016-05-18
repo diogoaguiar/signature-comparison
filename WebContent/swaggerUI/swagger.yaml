@@ -5,7 +5,7 @@ swagger: '2.0'
 
 # This is your document metadata
 info:
-  version: "1.0.2"
+  version: "1.0.3"
   title: Signature Compare Module API
   
 basePath: /SignatureComparisonModule/jaxrs
@@ -16,10 +16,8 @@ paths:
     get:
       responses:
         200:
-          description: Ok
+          description: Request successful
           schema:
-            type: array
-            items:
               type: string
         500:
           description: Couldn't connect to the database
@@ -28,10 +26,8 @@ paths:
     get:
       responses:
         200:
-          description: Ok
+          description: Request successful
           schema:
-            type: array
-            items:
               type: string
         500:
           description: Couldn't connect to the database
@@ -58,10 +54,7 @@ paths:
         200:
           description: Returns the requested image.
           schema:
-            title: Base64 string
-            type: array
-            items:
-              type: string
+            type: string
         500:
           description: Invalid **type** passed. Type must be either *client* or *check*.
         501:
@@ -87,7 +80,20 @@ paths:
         200:
           description: Comparison was successful. The comparison score is returned.
           schema:
-            type: integer
-            format: int32
+            $ref: '#/definitions/ComparisonResponse'
+            
         500:
           description: Comparison failed.
+          
+definitions:
+  ComparisonResponse:
+    type: object
+    properties:
+      verdict:
+        type: integer
+        format: int32
+        description: Code of the comparison's veredict (match or no match)
+      score:
+        type: integer
+        format: int32
+        description: Score of the comparison

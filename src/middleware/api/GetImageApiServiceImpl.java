@@ -4,26 +4,21 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import io.swagger.api.ApiResponseMessage;
+import io.swagger.api.GetImageApi;
 import io.swagger.api.NotFoundException;
 import middleware.DBManager;
 
 public class GetImageApiServiceImpl {
-	public Response getSignatureImageGet(String type, String name, SecurityContext securityContext) {
-		DBManager dbm = new DBManager("localhost", 27017, "scm_db");
-		String response = "";
+	public Response getSignatureImageGet(String type, String name, SecurityContext securityContext) throws NotFoundException {
+		DBManager dbm = new DBManager();
+		String response = "[";
 		switch(type) {
 		case "client":
-			//imageData = dbm.getImage("signatures", name);
-			response = dbm.getImage("test", name);
-			break;
+			return Response.ok(dbm.getImage("signatures", name).toJson()).build();
 		case "check":
-			//imageData = dbm.getImage("checks", name);
-			response = dbm.getImage("test", name);
-			break;
+			return Response.ok(dbm.getImage("checks", name).toJson()).build();
 		default:
 			return Response.serverError().build();
 		}
-		
-		return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, response)).build();
 	}
 }

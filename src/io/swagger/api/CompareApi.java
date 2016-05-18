@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiParam;
 
 import com.sun.jersey.multipart.FormDataParam;
 
+import io.swagger.model.ComparisonResponse;
 
 import java.util.List;
 import io.swagger.api.NotFoundException;
@@ -26,7 +27,7 @@ import javax.ws.rs.*;
 
 
 @io.swagger.annotations.Api(description = "the compare API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-09T02:54:52.433Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-11T22:40:50.677Z")
 public class CompareApi  {
    private final CompareApiService delegate = CompareApiServiceFactory.getCompareApi();
 
@@ -34,10 +35,10 @@ public class CompareApi  {
     
     
     
-    @io.swagger.annotations.ApiOperation(value = "", notes = "", response = Integer.class, tags={  })
+    @io.swagger.annotations.ApiOperation(value = "", notes = "", response = ComparisonResponse.class, tags={  })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "Comparison was successful. The comparison score is returned.", response = Integer.class),
-        @io.swagger.annotations.ApiResponse(code = 500, message = "Comparison failed.", response = Integer.class) })
+        @io.swagger.annotations.ApiResponse(code = 200, message = "Comparison was successful. The comparison score is returned.", response = ComparisonResponse.class),
+        @io.swagger.annotations.ApiResponse(code = 500, message = "Comparison failed.", response = ComparisonResponse.class) })
     public Response compareGet(
         @ApiParam(value = "Name of the client's signature image",required=true) @QueryParam("clientSignatureImageName") String clientSignatureImageName,
         @ApiParam(value = "Name of the check's image",required=true) @QueryParam("checkImageName") String checkImageName,

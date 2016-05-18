@@ -26,7 +26,7 @@ import javax.ws.rs.*;
 
 
 @io.swagger.annotations.Api(description = "the getChecksList API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-09T02:54:52.433Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-11T22:40:50.677Z")
 public class GetChecksListApi  {
    private final GetChecksListApiService delegate = GetChecksListApiServiceFactory.getGetChecksListApi();
 
@@ -34,10 +34,10 @@ public class GetChecksListApi  {
     
     
     
-    @io.swagger.annotations.ApiOperation(value = "", notes = "", response = String.class, responseContainer = "List", tags={  })
+    @io.swagger.annotations.ApiOperation(value = "", notes = "", response = String.class, tags={  })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "Ok", response = String.class, responseContainer = "List"),
-        @io.swagger.annotations.ApiResponse(code = 500, message = "Couldn't connect to the database", response = String.class, responseContainer = "List") })
+        @io.swagger.annotations.ApiResponse(code = 200, message = "Request successful", response = String.class),
+        @io.swagger.annotations.ApiResponse(code = 500, message = "Couldn't connect to the database", response = String.class) })
     public Response getChecksListGet(
         @Context SecurityContext securityContext)
     throws NotFoundException {
