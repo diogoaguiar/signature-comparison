@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiParam;
 
 import com.sun.jersey.multipart.FormDataParam;
 
+import io.swagger.model.InlineResponse2003;
 
 import java.util.List;
 import io.swagger.api.NotFoundException;
@@ -26,7 +27,7 @@ import javax.ws.rs.*;
 
 
 @io.swagger.annotations.Api(description = "the getClientSignaturesList API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-11T22:40:50.677Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-25T15:12:55.599Z")
 public class GetClientSignaturesListApi  {
    private final GetClientSignaturesListApiService delegate = GetClientSignaturesListApiServiceFactory.getGetClientSignaturesListApi();
 
@@ -34,10 +35,10 @@ public class GetClientSignaturesListApi  {
     
     
     
-    @io.swagger.annotations.ApiOperation(value = "", notes = "", response = String.class, tags={  })
+    @io.swagger.annotations.ApiOperation(value = "", notes = "Gets a list of all the images names from the collection signatures", response = InlineResponse2003.class, tags={  })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "Request successful", response = String.class),
-        @io.swagger.annotations.ApiResponse(code = 500, message = "Couldn't connect to the database", response = String.class) })
+        @io.swagger.annotations.ApiResponse(code = 200, message = "Request successful", response = InlineResponse2003.class),
+        @io.swagger.annotations.ApiResponse(code = 500, message = "Couldn't retrive signatures list", response = InlineResponse2003.class) })
     public Response getClientSignaturesListGet(
         @Context SecurityContext securityContext)
     throws NotFoundException {

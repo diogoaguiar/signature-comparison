@@ -1,6 +1,5 @@
 package middleware;
 
-import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +8,9 @@ import java.util.Properties;
 import org.bson.Document;
 import com.mongodb.Block;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoClientOptions.Builder;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -20,9 +22,11 @@ public class DBManager {
 
 	private MongoClient mc;
 	private MongoDatabase db;
+	private boolean isConnected;
 
 	/**
-	 * Simple constructor
+	 * Constructor - Imports connection properties and connects to the database
+	 * using those properties
 	 */
 	public DBManager() {
 		getPropValues();
@@ -33,35 +37,63 @@ public class DBManager {
 	 * Connect to the database.
 	 */
 	public void connect() {
-		mc = new MongoClient(ip, port);
-		db = mc.getDatabase(database);
+		if(testConnection()) {
+			mc = new MongoClient(ip, port);
+			db = mc.getDatabase(database);
+			isConnected = true;
+		} else {
+			isConnected = false;
+		}
 	}
-	
+
+	/**
+	 * Checks if it's able to connect to the database
+	 * 
+	 * @return boolean
+	 */
+	public boolean testConnection() {
+		boolean response;
+		MongoClientOptions options = MongoClientOptions.builder().serverSelectionTimeout(3000).build();
+		MongoClient testConnection = new MongoClient(new ServerAddress(ip, port), options);
+		try {
+			testConnection.getAddress();
+			response = true;
+		} catch (Exception e) {
+			Logger.error("Couldn't connect to the database.");
+			response = false;
+		}
+		testConnection.close();
+		
+		return response;
+	}
+
+	/**
+	 * Import connection properties
+	 */
 	private void getPropValues() {
 		InputStream inputStream;
 		try {
 			Properties prop = new Properties();
 			String propFileName = "config.properties";
- 
+
 			inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
- 
+
 			if (inputStream != null) {
 				prop.load(inputStream);
 			} else {
-				Logger.error("property file '" + propFileName + "' not found in the classpath");
+				Logger.error("Property file '" + propFileName
+						+ "' not found in the classpath. Connection properties not imported.");
+				return;
 			}
- 
+
 			// Get the property values
 			ip = prop.getProperty("ip");
-			System.out.println(ip);
 			port = Integer.parseInt(prop.getProperty("port"));
-			System.out.println(""+port);
 			database = prop.getProperty("database");
-			System.out.println(database);
-			
+
 			inputStream.close();
 		} catch (Exception e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 		}
 	}
 
@@ -84,19 +116,21 @@ public class DBManager {
 			// Add name
 			doc.put("name", name);
 
-			// Add empty fields
-			doc.put("match_image", "");
-			doc.put("match_score", "");
-
 			// Insert into DB collection
 			MongoCollection<Document> col = db.getCollection(collection);
 			col.insertOne(doc);
 		} catch (Exception e) {
-			Logger.error(e.getMessage());
+			Logger.error(e);
 		}
-
 	}
 
+	/**
+	 * Gets an image Document from the database.
+	 * 
+	 * @param collection
+	 * @param name
+	 * @return Image's Document object
+	 */
 	public Document getImage(String collection, String name) {
 		// Get document from DB
 		Document query = new Document();
@@ -107,27 +141,10 @@ public class DBManager {
 	}
 
 	/**
-	 * Get the image (BufferedImage) of a check from the database.
+	 * Returns a list with the Documents from checks collection
 	 * 
-	 * @param id
-	 * @return Check as image (BufferedImage)
+	 * @return List with the Documents from checks collection
 	 */
-	public BufferedImage getCheck(int id) {
-		return new BufferedImage(0, 0, 0);
-	}
-
-	/**
-	 * Get the image (BufferedImage) of a client's signature from the database.
-	 * 
-	 * @param id
-	 *            client's signature image ID
-	 * @return Client's signature as image (BufferedImage)
-	 */
-	public BufferedImage getClientSignature(int id) {
-
-		return new BufferedImage(0, 0, 0);
-	}
-
 	public List<Document> getCheckList() {
 		FindIterable<Document> results = db.getCollection("checks").find();
 		final ArrayList<Document> resultList = new ArrayList<Document>();
@@ -143,6 +160,26 @@ public class DBManager {
 		return resultList;
 	}
 
+	/**
+	 * Returns the config Document for the given algorithm
+	 * 
+	 * @param algorithm
+	 * @return Document with the configuration properties
+	 */
+	public Document getConfig(final String algorithm) {
+		Document query = new Document();
+		query.put("algorithm", algorithm);
+		FindIterable<Document> results = db.getCollection("config").find(query);
+
+		Document resultDoc = results.first();
+		return resultDoc;
+	}
+
+	/**
+	 * Returns a list with the Documents from signatures collection
+	 * 
+	 * @return List with the Documents from signatures collection
+	 */
 	public List<Document> getSignatureList() {
 		FindIterable<Document> results = db.getCollection("signatures").find();
 		final ArrayList<Document> resultList = new ArrayList<Document>();
@@ -156,5 +193,25 @@ public class DBManager {
 		});
 
 		return resultList;
+	}
+	
+	public boolean checkIfExists(String collection, String name) {
+		Document query = new Document();
+		query.put("name", name);
+		FindIterable<Document> results = db.getCollection(collection).find(query);
+		if(results.first() == null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public void close() {
+		isConnected = false;
+		mc.close();
+	}
+
+	public boolean isConnected() {
+		return isConnected;
 	}
 }

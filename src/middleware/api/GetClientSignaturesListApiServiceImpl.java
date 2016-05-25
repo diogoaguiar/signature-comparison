@@ -11,10 +11,16 @@ import org.bson.Document;
 import io.swagger.api.ApiResponseMessage;
 import io.swagger.api.NotFoundException;
 import middleware.DBManager;
+import middleware.Logger;
 
 public class GetClientSignaturesListApiServiceImpl {
 	public Response getClientSignaturesListGet(SecurityContext securityContext) throws NotFoundException {
 		DBManager dbm = new DBManager();
+		
+		if(!dbm.isConnected()) {
+			Logger.error("Couldn't connect to the database.");
+			return Response.serverError().build();
+		}
 		
 		List<Document> signatureList = dbm.getSignatureList();
 		List<Document> signatureListFiltered = new ArrayList<Document>();
@@ -25,6 +31,9 @@ public class GetClientSignaturesListApiServiceImpl {
 		}
 		Document doc = new Document();
 		doc.put("data", signatureListFiltered);
+
+		dbm.close();
+		
 		return Response.ok(doc.toJson()).build();
 	}
 }

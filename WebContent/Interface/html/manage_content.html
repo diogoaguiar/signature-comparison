@@ -1,0 +1,89 @@
+
+<!-- Title -->
+<div id="title_row" class="row">
+	<div class="jumbotron col-lg-12 text-center">
+		<h1>Manage</h1>
+	</div>
+</div>
+<!-- End Title -->
+
+<!-- Insert image -->
+<div class="col-lg-6">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Insert image</h3>
+		</div>
+		<div class="panel-body">
+			<div class="form-group">
+				<label>Image name</label> <input type="text" class="form-control"
+					id="image_name" name="image_name" placeholder="Image name">
+			</div>
+			<div class="form-group">
+				<label>Image type</label>
+				<div class="radio">
+					<label> <input type="radio" name="image_type"
+						value="signature" checked> Signature
+					</label>
+				</div>
+				<div class="radio">
+					<label> <input type="radio" name="image_type" value="check">
+						Cheque
+					</label>
+				</div>
+			</div>
+			<div class="form-group">
+				<label>Image file</label> <input type="file" id="image_browse"
+					accept="image/*">
+				<p class="help-block">Select an image to upload.</p>
+			</div>
+
+
+			<!-- Error alert -->
+			<div id="insert_image_error_alert" class="hidden">
+				<div class="alert alert-danger text-center" role="alert">
+					<span class="glyphicon glyphicon-exclamation-sign"
+						aria-hidden="true"></span> There seems to be one or more empty fields. All fields are requiered.
+				</div>
+			</div>
+			<!-- End Error alert -->
+
+			<button id="btn_insert_image" class="btn btn-default">Submit</button>
+		</div>
+	</div>
+</div>
+<!-- End Insert image -->
+
+<!-- Edit comparison config -->
+<div class="col-lg-6">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Comparison configuration</h3>
+		</div>
+		<div class="panel-body">
+			<!-- <div class="form-group">
+				<label>Algorithm</label> <select class="form-control">
+					<option>- Select an algorithm -</option>
+				</select>
+			</div> -->
+			<div class="form-group">
+				<label>Maximum image size (width, height)</label>
+				<div class="form-inline">
+					<input type="text" class="form-control" id="width"
+						placeholder="Width"> <input type="text"
+						class="form-control" id="height" placeholder="Height">
+				</div>
+			</div>
+			<div class="form-group">
+				<label>Threshold</label> <input type="text" class="form-control"
+					id="threshold" placeholder="Threshold">
+			</div>
+			<div class="form-group">
+				<label>Minimum best matches</label> <input type="text"
+					class="form-control" id="min_matches"
+					placeholder="Minimum best matches">
+			</div>
+			<button id="btn_update_config" class="btn btn-default">Update</button>
+		</div>
+	</div>
+</div>
+<!-- End Edit comparison config -->

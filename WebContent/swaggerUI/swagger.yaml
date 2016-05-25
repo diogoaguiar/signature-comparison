@@ -5,7 +5,7 @@ swagger: '2.0'
 
 # This is your document metadata
 info:
-  version: "1.0.3"
+  version: "1.0.0"
   title: Signature Compare Module API
   
 basePath: /SignatureComparisonModule/jaxrs
@@ -14,31 +14,46 @@ basePath: /SignatureComparisonModule/jaxrs
 paths:
   /getClientSignaturesList:
     get:
+      description: Gets a list of all the images names from the collection signatures
       responses:
         200:
           description: Request successful
           schema:
-              type: string
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    type: string
         500:
-          description: Couldn't connect to the database
+          description: Couldn't retrive signatures list
   
   /getChecksList:
     get:
+      description: Gets a list of all the images names from the collection checks
+      produces:
+        - application/json
       responses:
         200:
           description: Request successful
           schema:
-              type: string
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    type: string
         500:
-          description: Couldn't connect to the database
+          description: Couldn't retrive checks list
   
   /getImage:
     get:
+      description: Retrieves the image specified as a base64 string
       parameters:
       -
         name: type
         in: query
-        description: Type of image. (client's signature or check)
+        description: Type of image (client's signature or check)
         required: true
         type: string
         enum:
@@ -52,16 +67,19 @@ paths:
         type: string
       responses:
         200:
-          description: Returns the requested image.
+          description: Request successful
           schema:
-            type: string
+            type: object
+            properties:
+              image:
+                type: string
+                format: byte
         500:
-          description: Invalid **type** passed. Type must be either *client* or *check*.
-        501:
-          description: Image missing from database.
+          description: Couldn't retrive the resquested image
     
   /compare:
     get:
+      description: Compares the images specified and retrives the result
       parameters:
       -
         name: clientSignatureImageName
@@ -78,22 +96,213 @@ paths:
       
       responses:
         200:
-          description: Comparison was successful. The comparison score is returned.
+          description: Comparison successful
           schema:
-            $ref: '#/definitions/ComparisonResponse'
+            type: object
+            properties:
+              bestMatches:
+                type: string
+                description: Size of the matrix of matches found within the threshold
+              image1:
+                type: string
+                format: byte
+                description: Base64 string of image1
+              image2:
+                type: string
+                format: byte
+                description: Base64 string of image2
+              matchRate:
+                type: number
+                format: double
+                description: Matched descriptors rate in percentage
+              minNumMatches:
+                type: integer
+                format: int32
+                description: Minimum number of best matches needed to be considered a matching image
+              minMatchesPercent:
+                type: number
+                format: double
+                description: Percentage of success taht minNumMatches is equivalent to
+              queryDescriptors:
+                type: string
+                description: Size of the matrix of descriptors for the query image
+              queryImg:
+                type: string
+                format: byte
+                description: Base64 string of query image
+              queryKP:
+                type: string
+                description: Size of the matrix of keypoints for the query image
+              queryKPDraw:
+                type: string
+                format: byte
+                description: Base64 string of query image with keypoints
+              resultImg:
+                type: string
+                format: byte
+                description: Base64 string of the comparison result image
+              threshold:
+                type: integer
+                format: int32
+                description: Defines the rigor applied to the selection of the bestMatches (lower number = more rigorous)
+              trainDescriptors:
+                type: string
+                description: Size of the matrix of descriptors for the train image
+              trainImg:
+                type: string
+                format: byte
+                description: Base64 string of train image
+              trainKP:
+                type: string
+                description: Size of the matrix of keypoints for the train image
+              trainKPDraw:
+                type: string
+                format: byte
+                description: Base64 string of train image with keypoints
+              verdict:
+                type: boolean
+                description: Comparison's verdict (true = match, false = no match)
+              score:
+                type: number
+                format: double
+                description: Matching score
             
         500:
-          description: Comparison failed.
+          description: Couldn't retrive the comparison result
           
-definitions:
-  ComparisonResponse:
-    type: object
-    properties:
-      verdict:
+  /checkIfExists:
+    get:
+      description: Verifies if there's already an image with the given name
+      parameters:
+      -
+        name: name
+        in: query
+        description: Name of the image to be inserted
+        required: true
+        type: string
+      -
+        name: type
+        in: query
+        description: Type of image (client's signature or check)
+        required: true
+        type: string
+        enum:
+          - client
+          - check
+      responses:
+        200:
+          description: Request successful
+          schema:
+            type: object
+            properties:
+              exists:
+                type: boolean
+                description: True if exists an image with the same name, false otherwise
+        500:
+          description: Resquest failed
+          
+  /insertImage:
+    post:
+      description: Adds the given image to de database
+      consumes:
+        - application/json
+      parameters:
+      -
+        name: data
+        in: body
+        description: Image data
+        required: true
+        schema:
+          type: object
+          properties:
+            name:
+              description: Name of the image to be inserted
+              type: string
+            type:
+              description: Type of image (client's signature or check)
+              type: string
+              enum:
+                - client
+                - check
+            image:
+              description: Base64 string of the image data
+              type: string
+              format: byte
+      responses:
+        201:
+          description: Image inserted successfully
+        500:
+          description: Image couldn't be inserted
+      
+  /getAlgorithmParams:
+    get:
+      description: Gets the algorithm parameters
+      responses:
+        200:
+          description: Request successful
+          schema:
+            type: object
+            properties:
+              normMaxSize:
+                type: object
+                description: Mazximum size of the images to be compared
+                properties:
+                  width:
+                    type: integer
+                    format: int32
+                  height:
+                    type: integer
+                    format: int32
+              threshold:
+                type: integer
+                format: int32
+                description: Threshold for image comparison
+              minNumMatches:
+                type: integer
+                format: int32
+                description: Number of matches needed to be a matching image
+              minMatchesPercent:
+                type: number
+                format: double
+                description: Percentage of success taht minNumMatches is equivalent to
+        500:
+          description: Couldn't retrive algoritms list
+      
+  /putAlgorithmParams:
+    put:
+      description: Updates the algorithm parameters
+      parameters:
+      -
+        name: width
+        in: query
+        description: Maximum width size for the comparing images
+        required: true
         type: integer
         format: int32
-        description: Code of the comparison's veredict (match or no match)
-      score:
+      -
+        name: height
+        in: query
+        description: Maximum height size for the comparing images
+        required: true
         type: integer
         format: int32
-        description: Score of the comparison
+      -
+        name: threshold
+        in: query
+        description: Threshold for image comparison
+        required: true
+        type: integer
+        format: int32
+      -
+        name: minMatches
+        in: query
+        description: Number of matches needed to be a matching image
+        required: true
+        type: integer
+        format: int32
+        
+      responses:
+        200:
+          description: Update successful
+        500:
+          description: Couldn't update the configuration

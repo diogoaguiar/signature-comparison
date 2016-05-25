@@ -3,13 +3,41 @@ package middleware;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Properties;
 
 public class Logger {
-	public static final String ERROR_LOG = "error.log";
+	public static final String ERROR_LOG = getPath() + "error.log";
+	public static final String PROP_FILE = "config.properties";
+	
+	private static String getPath() {
+		String path = "";
+		InputStream inputStream;
+		try {
+			Properties prop = new Properties();
+ 
+			inputStream = Logger.class.getClassLoader().getResourceAsStream(PROP_FILE);
+ 
+			if (inputStream != null) {
+				prop.load(inputStream);
+				path = prop.getProperty("log_path"); // Get the property values
+			} else {
+				System.out.println("Property file '" + PROP_FILE + "' not found. Logger properties not imported.");
+			}
+			inputStream.close();
+		} catch (Exception e) {
+			System.out.println("Couldn't import log path from '" + PROP_FILE + "'. Default path will be used.");
+		}
+		
+		path = path.replace("/", "\\");
+		if(!path.endsWith("\\")) {
+			path += "\\";
+		}
+		
+		return path;
+	}
 
 	public static void error(String description) {
 		try {

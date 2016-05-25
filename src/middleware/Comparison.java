@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.bson.Document;
 import org.opencv.core.Core;
 import org.opencv.core.DMatch;
 import org.opencv.core.Mat;
@@ -25,9 +26,11 @@ public class Comparison {
 	private Img img2; // Image 2
 	private float threshold; // Limit difference between descriptors to be
 								// considered
+	private int minNumMatches; // Number of best matches needed do have a matching image
+	private double minMatchesPercent; // Score percentage corresponding to the minNumMatches value
 	private boolean debugMode; // Prints debuging information and shows visuals
 
-	private Size normMaxSize;
+	private Size normMaxSize; // Maximum image size for comparison. Bigger images will be resized
 
 	// Constructors and initializations
 	/**
@@ -53,15 +56,15 @@ public class Comparison {
 	}
 
 	/**
-	 * Constructor for buffered images.
+	 * Constructor for Img images.
 	 * 
 	 * @param image1
-	 *            - image with the client's signature image
+	 *            - image with the signature
 	 * @param image2
-	 *            - image with the check's image
+	 *            - image with the check
 	 */
 	public Comparison(Img image1, Img image2) {
-		// Convert images to Mat object
+		// Make a copy of the images
 		img1 = image1.clone();
 		img2 = image2.clone();
 
@@ -72,17 +75,27 @@ public class Comparison {
 	 * Initialize parameters and variables.
 	 */
 	private void init() {
-		// normMinSize = new Size(200, 50);
-		normMaxSize = new Size(800, 800);
 		debugMode = false;
-		threshold = 50;
+		
 	}
 
 	// Comparison methods
 	/**
 	 * Compare base image with the template with the default settings
 	 */
-	public double featureMatching() {
+	public ComparisonResult featureMatching() {
+		// Import config from database
+		DBManager dbm = new DBManager();
+		Document configDoc = dbm.getConfig("featureMatching");
+		normMaxSize = new Size(((Document)(configDoc.get("normMaxSize"))).getInteger("width"), ((Document)(configDoc.get("normMaxSize"))).getInteger("height"));
+		threshold = configDoc.getInteger("threshold");
+		minNumMatches = configDoc.getInteger("minNumMatches");
+		minMatchesPercent = configDoc.getDouble("minMatchesPercent");
+		dbm.close();
+		
+		// Initialize the resulting object
+		ComparisonResult result = new ComparisonResult(img1.clone(), img2.clone(), threshold, minNumMatches, minMatchesPercent);
+		
 		// Normalization
 		Mat normImg1 = normalize(img1);
 		Mat normImg2 = normalize(img2);
@@ -95,10 +108,15 @@ public class Comparison {
 		fd.detect(normImg1, img1KP);
 		fd.detect(normImg2, img2KP);
 
+		// Set query and train image
 		Mat queryImg, trainImg;
 		MatOfKeyPoint queryKP, trainKP;
 
-		if (img2KP.size().height > img1KP.size().height) {
+		queryImg = normImg1;
+		trainImg = normImg2;
+		queryKP = img1KP;
+		trainKP = img2KP;
+		/*if (img2KP.size().height < img1KP.size().height) {
 			queryImg = normImg2;
 			trainImg = normImg1;
 			queryKP = img2KP;
@@ -108,7 +126,11 @@ public class Comparison {
 			trainImg = normImg2;
 			queryKP = img1KP;
 			trainKP = img2KP;
-		}
+		}*/
+		result.setQueryImg(queryImg);
+		result.setTrainImg(trainImg);
+		result.setQueryKP(queryKP);
+		result.setTrainKP(trainKP);
 
 		if (debugMode) {
 			System.out.println("QueryImage KeyPoints: " + queryKP.size());
@@ -116,14 +138,17 @@ public class Comparison {
 		}
 
 		// Draw keypoints
+		Mat queryKPDraw = queryImg.clone();
+		Mat trainKPDraw = trainImg.clone();
+
+		Features2d.drawKeypoints(queryImg, queryKP, queryKPDraw);
+		Features2d.drawKeypoints(trainImg, trainKP, trainKPDraw);
+		
+		result.setQueryKPDraw(queryKPDraw);
+		result.setTrainKPDraw(trainKPDraw);
+		
 		if (debugMode) {
-			// Draw Keypoints
-			Mat queryKPDraw = queryImg.clone();
-			Mat trainKPDraw = trainImg.clone();
-
-			Features2d.drawKeypoints(queryImg, queryKP, queryKPDraw);
-			Features2d.drawKeypoints(trainImg, trainKP, trainKPDraw);
-
+			// Show Keypoints
 			new Img(queryKPDraw).show();
 			new Img(trainKPDraw).show();
 		}
@@ -135,6 +160,9 @@ public class Comparison {
 		DescriptorExtractor extractor = DescriptorExtractor.create(DescriptorExtractor.BRISK);
 		extractor.compute(queryImg, queryKP, queryDescriptors);
 		extractor.compute(trainImg, trainKP, trainDescriptors);
+		
+		result.setQueryDescriptors(queryDescriptors);
+		result.setTrainDescriptors(trainDescriptors);
 
 		if (debugMode) {
 			System.out.println("Query Descriptors: " + queryDescriptors.size());
@@ -146,6 +174,8 @@ public class Comparison {
 
 		DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMINGLUT);
 		matcher.match(queryDescriptors, trainDescriptors, matches);
+		
+		result.setMatches(matches);
 
 		if (debugMode) {
 			System.out.println("Num of matches: " + matches.size());
@@ -171,30 +201,31 @@ public class Comparison {
 				break;
 			}
 		}
-
+		
+		MatOfDMatch matchesFiltered = new MatOfDMatch();
+		matchesFiltered.fromList(bestMatches);
+		result.setBestMatches(matchesFiltered);
+		
+		Mat outImage = new Mat();
+		Features2d.drawMatches(queryImg, queryKP, trainImg, trainKP, matchesFiltered, outImage);
+		result.setResultImg(new Img(outImage));
+		
 		if (debugMode) {
 			System.out.println("Found " + bestMatches.size() + " matches from a total of "
 					+ (int) trainDescriptors.size().height + " possibilities.\n" + "Match rate is of "
-					+ (float) (((double) bestMatches.size() / trainDescriptors.size().height) * 100) + "%.");
+					+ result.calcMatchRate() + "%.");
 		}
 
 		if (debugMode && bestMatches.size() >= threshold) {
 			System.out.println("Match found (" + bestMatches.size() + ")");
 		}
-
+		
 		if (debugMode) {
 			// Draw matches
-			MatOfDMatch matchesFiltered = new MatOfDMatch();
-			matchesFiltered.fromList(bestMatches);
-
-			Mat outImage = new Mat();
-
-			Features2d.drawMatches(queryImg, queryKP, trainImg, trainKP, matchesFiltered, outImage);
-
-			new Img(outImage).show();
+			result.getResultImg().show();
 		}
 
-		return 0;
+		return result;
 	}
 
 	// Settes and Getters
@@ -224,12 +255,12 @@ public class Comparison {
 	private Mat normalize(Img image) {
 		// Resize
 		if (image.getWidth() > normMaxSize.width) {
-			image = image.resizeWidth((int)normMaxSize.width, true);
+			image = image.resizeWidth((int) normMaxSize.width, true);
 		}
 		if (image.getHeight() > normMaxSize.height) {
-			image = image.resizeHeight((int)normMaxSize.height, true);
+			image = image.resizeHeight((int) normMaxSize.height, true);
 		}
-		
+
 		// Convert to Mat
 		Mat matImg = image.getMat();
 

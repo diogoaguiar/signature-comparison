@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiParam;
 
 import com.sun.jersey.multipart.FormDataParam;
 
+import io.swagger.model.InlineResponse2004;
 
 import java.util.List;
 import io.swagger.api.NotFoundException;
@@ -26,7 +27,7 @@ import javax.ws.rs.*;
 
 
 @io.swagger.annotations.Api(description = "the getImage API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-11T22:40:50.677Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-25T15:12:55.599Z")
 public class GetImageApi  {
    private final GetImageApiService delegate = GetImageApiServiceFactory.getGetImageApi();
 
@@ -34,13 +35,12 @@ public class GetImageApi  {
     
     
     
-    @io.swagger.annotations.ApiOperation(value = "", notes = "", response = String.class, tags={  })
+    @io.swagger.annotations.ApiOperation(value = "", notes = "Retrieves the image specified as a base64 string", response = InlineResponse2004.class, tags={  })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "Returns the requested image.", response = String.class),
-        @io.swagger.annotations.ApiResponse(code = 500, message = "Invalid **type** passed. Type must be either *client* or *check*.", response = String.class),
-        @io.swagger.annotations.ApiResponse(code = 501, message = "Image missing from database.", response = String.class) })
+        @io.swagger.annotations.ApiResponse(code = 200, message = "Request successful", response = InlineResponse2004.class),
+        @io.swagger.annotations.ApiResponse(code = 500, message = "Couldn't retrive the resquested image", response = InlineResponse2004.class) })
     public Response getImageGet(
-        @ApiParam(value = "Type of image. (client's signature or check)",required=true, allowableValues="client, check") @QueryParam("type") String type,
+        @ApiParam(value = "Type of image (client's signature or check)",required=true, allowableValues="client, check") @QueryParam("type") String type,
         @ApiParam(value = "Name of the image to be returned",required=true) @QueryParam("name") String name,
         @Context SecurityContext securityContext)
     throws NotFoundException {

@@ -8,29 +8,39 @@ import org.bson.Document;
 import io.swagger.api.ApiResponseMessage;
 import io.swagger.api.NotFoundException;
 import middleware.Comparison;
+import middleware.ComparisonResult;
 import middleware.DBManager;
 import middleware.Img;
+import middleware.Logger;
 
 public class CompareApiServiceImpl {
 	public Response compareGet(String clientSignatureImageName, String checkImageName,
 			SecurityContext securityContext) throws NotFoundException {
 		
+		// Connect to the DB
 		DBManager dbm = new DBManager();
+		if(!dbm.isConnected()) { // Check if connected successfully
+			Logger.error("Couldn't connect to the database.");
+			return Response.serverError().build();
+		}
+		
+		// Get images to compare from DB
 		Document signDoc = dbm.getImage("signatures", clientSignatureImageName);
 		Document checkDoc = dbm.getImage("checks", checkImageName);
+		if(signDoc.isEmpty() || checkDoc.isEmpty()) { // Check if retrived images successfully
+			Logger.error("Couldn't retrive image for comparison from the database.");
+			return Response.serverError().build();
+		}
+		dbm.close(); // Close DB connection
 
-		Img signImg = new Img((String) signDoc.get("image"));
+		// Comparison
+		Img signImg = new Img((String) signDoc.get("image")); // Get image from Document
 		Img checkImg = new Img((String) checkDoc.get("image"));
 
-		Comparison comp;
-		comp = new Comparison(signImg, checkImg);
+		Comparison comp = new Comparison(signImg, checkImg);
+		ComparisonResult result = comp.featureMatching(); // Compare images
 		
-		double score = comp.featureMatching();
-		
-		Document response = new Document();
-		response.put("verdict", 1);
-		response.put("score", score);
-		
-		return Response.ok(response.toJson()).build();
+		// Return response
+		return Response.ok(result.toJson()).build();
 	}
 }

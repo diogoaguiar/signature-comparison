@@ -1,0 +1,11 @@
+{
+	"server" : {
+		"url" : "http://localhost:8080"
+	},
+	"api" : {
+		"getSignatureList" : "/SignatureComparisonModule/jaxrs/getClientSignaturesList",
+		"getCheckList" : "/SignatureComparisonModule/jaxrs/getChecksList",
+		"getImage" : "/SignatureComparisonModule/jaxrs/getImage",
+		"compare" : "/SignatureComparisonModule/jaxrs/compare"
+	}
+}
