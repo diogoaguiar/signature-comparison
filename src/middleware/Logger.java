@@ -40,6 +40,7 @@ public class Logger {
 	}
 
 	public static void error(String description) {
+		System.out.println(description);
 		try {
 		FileWriter outStream = new FileWriter(ERROR_LOG, true);
 		BufferedWriter bW = new BufferedWriter(outStream);
@@ -73,5 +74,7 @@ public class Logger {
 	
 	public static void error(Exception e) {
 		error(e.getMessage());
+		System.out.println("Stacktrace:");
+		e.printStackTrace();
 	}
 }

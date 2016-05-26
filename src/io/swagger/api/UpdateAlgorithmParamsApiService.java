@@ -5,7 +5,6 @@ import io.swagger.model.*;
 
 import com.sun.jersey.multipart.FormDataParam;
 
-import io.swagger.model.InlineResponse2003;
 
 import java.util.List;
 import io.swagger.api.NotFoundException;
@@ -19,9 +18,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-26T14:01:41.973Z")
-public abstract class GetClientSignaturesListApiService {
+public abstract class UpdateAlgorithmParamsApiService {
   
-      public abstract Response getClientSignaturesListGet(SecurityContext securityContext)
+      public abstract Response updateAlgorithmParamsGet(Integer width,Integer height,Integer threshold,Integer minMatches,Double minMatchesPercent,SecurityContext securityContext)
       throws NotFoundException;
   
 }

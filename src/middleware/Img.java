@@ -33,11 +33,15 @@ public class Img {
 	public Img() {
 	}
 
+	public Img(byte[] bytes) throws IOException {
+		setImageByBytes(bytes);
+	}
+
 	public Img(BufferedImage bufImg) {
 		setImageByBufferedImage(bufImg);
 	}
 
-	public Img(String base64) {
+	public Img(String base64) throws IOException {
 		setImageByBase64(base64);
 	}
 
@@ -46,21 +50,17 @@ public class Img {
 	}
 
 	// Image setters
-	public void setImageByPath(String path) {
-		try {
-			image = ImageIO.read(new File(path));
-		} catch (IOException e) {
-			Logger.error(e.getMessage());
-		}
+	public void setImageByPath(String path) throws IOException {
+		image = ImageIO.read(new File(path));
 	}
 
-	public void setImageByBase64(String base64) {
-		try {
-			byte[] imgBytes = Base64.decodeBase64(base64);
-			image = ImageIO.read(new ByteArrayInputStream(imgBytes));
-		} catch (IOException e) {
-			Logger.error(e.getMessage());
-		}
+	public void setImageByBytes(byte[] imgBytes) throws IOException {
+		image = ImageIO.read(new ByteArrayInputStream(imgBytes));
+	}
+
+	public void setImageByBase64(String base64) throws IOException {
+		byte[] imgBytes = Base64.decodeBase64(base64);
+		image = ImageIO.read(new ByteArrayInputStream(imgBytes));
 	}
 
 	public void setImageByBufferedImage(BufferedImage bufImg) {
@@ -149,11 +149,11 @@ public class Img {
 	public boolean empty() {
 		return (image == null) ? true : false;
 	}
-	
+
 	public int getWidth() {
 		return image.getWidth();
 	}
-	
+
 	public int getHeight() {
 		return image.getHeight();
 	}
@@ -174,7 +174,8 @@ public class Img {
 
 	public Img resizeWidth(int width, boolean keepProportions) {
 		if (image.getWidth() != width) {
-			int height = (keepProportions) ? (int)(((double)width / image.getWidth()) * image.getHeight()) : image.getHeight();
+			int height = (keepProportions) ? (int) (((double) width / image.getWidth()) * image.getHeight())
+					: image.getHeight();
 			return resize(width, height);
 		} else {
 			return clone();
@@ -183,7 +184,8 @@ public class Img {
 
 	public Img resizeHeight(int height, boolean keepProportions) {
 		if (image.getHeight() != height) {
-			int width = (keepProportions) ? (int)(((double)height / image.getHeight()) * image.getWidth()) : image.getWidth();
+			int width = (keepProportions) ? (int) (((double) height / image.getHeight()) * image.getWidth())
+					: image.getWidth();
 			return resize(width, height);
 		} else {
 			return clone();

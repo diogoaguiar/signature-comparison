@@ -122,7 +122,7 @@ paths:
               minMatchesPercent:
                 type: number
                 format: double
-                description: Percentage of success taht minNumMatches is equivalent to
+                description: Percentage of success that minNumMatches is equivalent to
               queryDescriptors:
                 type: string
                 description: Size of the matrix of descriptors for the query image
@@ -227,7 +227,6 @@ paths:
             image:
               description: Base64 string of the image data
               type: string
-              format: byte
       responses:
         201:
           description: Image inserted successfully
@@ -264,12 +263,12 @@ paths:
               minMatchesPercent:
                 type: number
                 format: double
-                description: Percentage of success taht minNumMatches is equivalent to
+                description: Percentage of success that minNumMatches is equivalent to
         500:
           description: Couldn't retrive algoritms list
       
-  /putAlgorithmParams:
-    put:
+  /updateAlgorithmParams:
+    get:
       description: Updates the algorithm parameters
       parameters:
       -
@@ -300,6 +299,13 @@ paths:
         required: true
         type: integer
         format: int32
+      -
+        name: minMatchesPercent
+        in: query
+        description: Percentage of success that minNumMatches is equivalent to
+        required: true
+        type: number
+        format: double
         
       responses:
         200:

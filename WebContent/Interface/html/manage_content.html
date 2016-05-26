@@ -7,6 +7,26 @@
 </div>
 <!-- End Title -->
 
+<!-- Modal -->
+<div class="modal fade" id="alert_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Name already in use</h4>
+      </div>
+      <div class="modal-body">
+        There's already an image with named <b id="alert_image_name"></b> in the database. If you continue the older image will be replaced with the new image. Do you wish to continue and replace the older image?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="alert_confirm">Yes</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Modal -->
+
 <!-- Insert image -->
 <div class="col-lg-6">
 	<div class="panel panel-default">
@@ -22,7 +42,7 @@
 				<label>Image type</label>
 				<div class="radio">
 					<label> <input type="radio" name="image_type"
-						value="signature" checked> Signature
+						value="client" checked> Signature
 					</label>
 				</div>
 				<div class="radio">
@@ -38,14 +58,14 @@
 			</div>
 
 
-			<!-- Error alert -->
+			<!-- Insert image error alert -->
 			<div id="insert_image_error_alert" class="hidden">
 				<div class="alert alert-danger text-center" role="alert">
 					<span class="glyphicon glyphicon-exclamation-sign"
 						aria-hidden="true"></span> There seems to be one or more empty fields. All fields are requiered.
 				</div>
 			</div>
-			<!-- End Error alert -->
+			<!-- End Insert Image error alert -->
 
 			<button id="btn_insert_image" class="btn btn-default">Submit</button>
 		</div>
@@ -68,20 +88,35 @@
 			<div class="form-group">
 				<label>Maximum image size (width, height)</label>
 				<div class="form-inline">
-					<input type="text" class="form-control" id="width"
-						placeholder="Width"> <input type="text"
-						class="form-control" id="height" placeholder="Height">
+					<input type="text" class="form-control" id="width" name="width"
+						placeholder=""> <input type="text"
+						class="form-control" id="height" name="height" placeholder="">
 				</div>
 			</div>
 			<div class="form-group">
 				<label>Threshold</label> <input type="text" class="form-control"
-					id="threshold" placeholder="Threshold">
+					id="threshold" name="threshold" placeholder="">
 			</div>
 			<div class="form-group">
 				<label>Minimum best matches</label> <input type="text"
-					class="form-control" id="min_matches"
-					placeholder="Minimum best matches">
+					class="form-control" id="min_matches" name="min_matches"
+					placeholder="">
 			</div>
+			<div class="form-group">
+				<label>Minimum matches percentage</label> <input type="text"
+					class="form-control" id="min_matches_percent" name="min_matches_percent"
+					placeholder="">
+			</div>
+			
+			<!-- Update config error alert -->
+			<div id="update_config_error_alert" class="hidden">
+				<div class="alert alert-danger text-center" role="alert">
+					<span class="glyphicon glyphicon-exclamation-sign"
+						aria-hidden="true"></span> Please fill at leasts one field to be updated.
+				</div>
+			</div>
+			<!-- End Update config error alert -->
+			
 			<button id="btn_update_config" class="btn btn-default">Update</button>
 		</div>
 	</div>

@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-25T15:12:55.599Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-26T14:01:41.973Z")
 public class Data   {
   
   private String name = null;
@@ -34,7 +34,7 @@ public class Data   {
   }
 
   private TypeEnum type = null;
-  private byte[] image = null;
+  private String image = null;
 
   
   /**
@@ -78,7 +78,7 @@ public class Data   {
   /**
    * Base64 string of the image data
    **/
-  public Data image(byte[] image) {
+  public Data image(String image) {
     this.image = image;
     return this;
   }
@@ -86,10 +86,10 @@ public class Data   {
   
   @ApiModelProperty(value = "Base64 string of the image data")
   @JsonProperty("image")
-  public byte[] getImage() {
+  public String getImage() {
     return image;
   }
-  public void setImage(byte[] image) {
+  public void setImage(String image) {
     this.image = image;
   }
 

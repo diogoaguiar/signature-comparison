@@ -10,7 +10,7 @@ import io.swagger.model.InlineResponse2002NormMaxSize;
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-25T15:12:55.599Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-26T14:01:41.973Z")
 public class InlineResponse2002   {
   
   private Integer minNumMatches = null;
@@ -76,7 +76,7 @@ public class InlineResponse2002   {
 
   
   /**
-   * Percentage of success taht minNumMatches is equivalent to
+   * Percentage of success that minNumMatches is equivalent to
    **/
   public InlineResponse2002 minMatchesPercent(Double minMatchesPercent) {
     this.minMatchesPercent = minMatchesPercent;
@@ -84,7 +84,7 @@ public class InlineResponse2002   {
   }
 
   
-  @ApiModelProperty(value = "Percentage of success taht minNumMatches is equivalent to")
+  @ApiModelProperty(value = "Percentage of success that minNumMatches is equivalent to")
   @JsonProperty("minMatchesPercent")
   public Double getMinMatchesPercent() {
     return minMatchesPercent;

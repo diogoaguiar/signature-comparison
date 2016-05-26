@@ -17,14 +17,13 @@ import com.sun.jersey.multipart.FormDataParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-25T15:12:55.599Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-05-25T19:26:17.244Z")
 public class PutAlgorithmParamsApiServiceImpl extends PutAlgorithmParamsApiService {
     
     @Override
-    public Response putAlgorithmParamsPut(Integer width, Integer height, Integer threshold, Integer minMatches, SecurityContext securityContext)
+    public Response putAlgorithmParamsPut(Integer width, Integer height, Integer threshold, Integer minMatches, Double minMatchesPercent, SecurityContext securityContext)
     throws NotFoundException {
-        // do some magic!
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+        return new middleware.api.PutAlgorithmParamsApiServiceImpl().putAlgorithmParamsPut(width, height, threshold, minMatches, minMatchesPercent, securityContext);
     }
     
 }

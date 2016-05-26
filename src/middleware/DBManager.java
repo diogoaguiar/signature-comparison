@@ -106,6 +106,10 @@ public class DBManager {
 	 */
 	public void insertImage(String collection, Img image, String name) {
 		try {
+			// Remove image with the same name
+			Document query = new Document("name", name);
+			db.getCollection(collection).findOneAndDelete(query);
+			
 			// Create DB document
 			Document doc = new Document();
 
@@ -173,6 +177,24 @@ public class DBManager {
 
 		Document resultDoc = results.first();
 		return resultDoc;
+	}
+
+	public void updateConfig(String algorithm, int width, int height, int threshold, int minNumMatches, double minNumPercent) {
+		Document query = new Document();
+		query.put("algorithm", algorithm);
+		MongoCollection<Document> collection = db.getCollection("config");
+
+		Document doc = new Document();
+		doc.put("algorithm", algorithm);
+		Document normMaxSize = new Document();
+		normMaxSize.put("width", width);
+		normMaxSize.put("height", height);
+		doc.put("normMaxSize", normMaxSize);
+		doc.put("threshold", threshold);
+		doc.put("minNumMatches", minNumMatches);
+		doc.put("minMatchesPercent", minNumPercent);
+
+		collection.findOneAndReplace(query, doc);
 	}
 
 	/**

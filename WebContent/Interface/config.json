@@ -6,6 +6,10 @@
 		"getSignatureList" : "/SignatureComparisonModule/jaxrs/getClientSignaturesList",
 		"getCheckList" : "/SignatureComparisonModule/jaxrs/getChecksList",
 		"getImage" : "/SignatureComparisonModule/jaxrs/getImage",
-		"compare" : "/SignatureComparisonModule/jaxrs/compare"
+		"compare" : "/SignatureComparisonModule/jaxrs/compare",
+		"checkIfExists" : "/SignatureComparisonModule/jaxrs/checkIfExists",
+		"insertImage" : "/SignatureComparisonModule/jaxrs/insertImage",
+		"getAlgorithmParams" : "/SignatureComparisonModule/jaxrs/getAlgorithmParams",
+		"updateAlgorithmParams" : "/SignatureComparisonModule/jaxrs/updateAlgorithmParams"
 	}
 }

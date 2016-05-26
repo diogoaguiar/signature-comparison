@@ -1,5 +1,6 @@
 package middleware;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -40,8 +41,9 @@ public class Comparison {
 	 *            - path for the client's signature image
 	 * @param checkImagePath
 	 *            - path for the check's image
+	 * @throws IOException 
 	 */
-	public Comparison(String image1, String image2) {
+	public Comparison(String image1, String image2) throws IOException {
 		img1 = new Img();
 		img1.setImageByPath(image1);
 		img2 = new Img();
