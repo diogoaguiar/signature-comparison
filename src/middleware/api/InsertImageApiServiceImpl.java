@@ -6,6 +6,7 @@ import io.swagger.model.*;
 import com.sun.jersey.multipart.FormDataParam;
 
 import io.swagger.model.Data;
+import io.swagger.model.Data.TypeEnum;
 import middleware.DBManager;
 import middleware.Img;
 import middleware.Logger;
@@ -35,7 +36,7 @@ public class InsertImageApiServiceImpl extends InsertImageApiService {
 				return Response.serverError().build();
 			}
 
-			String collection = (data.getName().equals("check")) ? "checks" : "signatures";
+			String collection = (data.getType().equals(TypeEnum.CHECK)) ? "checks" : "signatures";
 			String imageBase64 = data.getImage();
 			Img image = new Img(imageBase64);
 			String name = data.getName();
