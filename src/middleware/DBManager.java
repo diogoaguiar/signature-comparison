@@ -137,7 +137,6 @@ public class DBManager {
 			public void apply(final Document doc) {
 				resultList.add(doc);
 			}
-
 		});
 
 		return resultList;
