@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.bson.Document;
-import org.opencv.core.Core;
 import org.opencv.core.DMatch;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDMatch;
@@ -19,7 +18,7 @@ import org.opencv.imgproc.Imgproc;
 public class Comparison {
 	// Load OpenCV
 	static {
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		System.load(SCMServlet.getInstance().getOpencvDllName());
 	}
 
 	// Variables
@@ -93,7 +92,6 @@ public class Comparison {
 		threshold = configDoc.getInteger("threshold");
 		minNumMatches = configDoc.getInteger("minNumMatches");
 		minMatchesPercent = configDoc.getDouble("minMatchesPercent");
-		dbm.close();
 		
 		// Initialize the resulting object
 		ComparisonResult result = new ComparisonResult(img1.clone(), img2.clone(), threshold, minNumMatches, minMatchesPercent);

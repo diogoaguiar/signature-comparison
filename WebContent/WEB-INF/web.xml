@@ -39,6 +39,12 @@
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 
+	<servlet>
+		<servlet-name>SCMServlet</servlet-name>
+		<servlet-class>middleware.SCMServlet</servlet-class>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>jersey</servlet-name>
 		<url-pattern>/jaxrs/*</url-pattern>

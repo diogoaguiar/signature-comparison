@@ -3,6 +3,7 @@ package middleware.api;
 import io.swagger.api.*;
 import io.swagger.model.*;
 import middleware.DBManager;
+import middleware.Logger;
 
 import com.sun.jersey.multipart.FormDataParam;
 
@@ -26,6 +27,7 @@ public class PutAlgorithmParamsApiServiceImpl extends PutAlgorithmParamsApiServi
 		DBManager dbm = new DBManager();
 
 		if (!dbm.isConnected()) {
+			Logger.error("Not connected to the database");
 			return Response.serverError().build();
 		}
 		System.out.println(width);
@@ -34,7 +36,6 @@ public class PutAlgorithmParamsApiServiceImpl extends PutAlgorithmParamsApiServi
 		System.out.println(minMatches);
 		System.out.println(minMatchesPercent);
 		dbm.updateConfig("featureMatching", width, height, threshold, minMatches, minMatchesPercent);
-		dbm.close();
 		
 		return Response.ok().build();
 	}

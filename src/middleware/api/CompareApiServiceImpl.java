@@ -20,25 +20,20 @@ public class CompareApiServiceImpl {
 			// Connect to the DB
 			DBManager dbm = new DBManager();
 			if (!dbm.isConnected()) { // Check if connected successfully
-				Logger.error("Couldn't connect to the database.");
+				Logger.error("Not connected to the database");
 				return Response.serverError().build();
 			}
 
 			// Get images to compare from DB
 			Document signDoc = dbm.getImage("signatures", clientSignatureImageName);
 			Document checkDoc = dbm.getImage("checks", checkImageName);
-			if (signDoc.isEmpty() || checkDoc.isEmpty()) { // Check if retrived
-															// images
-															// successfully
+			if (signDoc.isEmpty() || checkDoc.isEmpty()) { // Check if retrived images successfully
 				Logger.error("Couldn't retrive image for comparison from the database.");
 				return Response.serverError().build();
 			}
-			dbm.close(); // Close DB connection
 
 			// Comparison
-			Img signImg = new Img((String) signDoc.get("image")); // Get image
-																	// from
-																	// Document
+			Img signImg = new Img((String) signDoc.get("image")); // Get image from Document
 			Img checkImg = new Img((String) checkDoc.get("image"));
 
 			Comparison comp = new Comparison(signImg, checkImg);

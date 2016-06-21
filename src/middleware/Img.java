@@ -20,7 +20,7 @@ import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
-import org.apache.tomcat.util.codec.binary.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 

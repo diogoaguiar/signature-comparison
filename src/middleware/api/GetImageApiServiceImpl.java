@@ -22,11 +22,8 @@ public class GetImageApiServiceImpl {
 			doc = dbm.getImage("checks", name);
 			break;
 		default:
-			dbm.close();
 			return Response.serverError().build();
 		}
-		
-		dbm.close();
 		return Response.ok(doc.toJson()).build();
 	}
 }

@@ -19,12 +19,11 @@ public class GetChecksListApiServiceImpl {
 		DBManager dbm = new DBManager();
 		
 		if(!dbm.isConnected()) {
-			Logger.error("Couldn't connect to the database.");
+			Logger.error("Not connected to the database");
 			return Response.serverError().build();
 		}
 		
 		List<Document> checkList = dbm.getCheckList();
-		dbm.close();
 		
 		List<Document> checkListFiltered = new ArrayList<Document>();
 		for(Document d : checkList) {

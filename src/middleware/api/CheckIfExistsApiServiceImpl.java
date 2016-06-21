@@ -20,12 +20,11 @@ public class CheckIfExistsApiServiceImpl extends CheckIfExistsApiService {
     	DBManager dbm = new DBManager();
     	
     	if(!dbm.isConnected()) {
-    		Logger.error("Couldn't connect to the database.");
+    		Logger.error("Not connected to the database");
     		return Response.serverError().build();
     	}
     	String collection = (type.equals("check")) ? "checks" : "signatures";
     	boolean respValue = dbm.checkIfExists(collection, name);
-    	dbm.close();
     	Document response = new Document();
     	response.put("exists", respValue);
         return Response.ok().entity(response.toJson()).build();

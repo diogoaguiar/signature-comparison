@@ -29,7 +29,6 @@ public class GetAlgorithmParamsApiServiceImpl extends GetAlgorithmParamsApiServi
     throws NotFoundException {
     	DBManager dbm = new DBManager();
     	Document response = dbm.getConfig("featureMatching");
-    	dbm.close();
     	response.remove("_id");
     	response.remove("algorithm");
         return Response.ok(response.toJson()).build();

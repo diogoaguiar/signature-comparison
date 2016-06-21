@@ -18,7 +18,7 @@ public class GetClientSignaturesListApiServiceImpl {
 		DBManager dbm = new DBManager();
 		
 		if(!dbm.isConnected()) {
-			Logger.error("Couldn't connect to the database.");
+			Logger.error("Not connected to the database");
 			return Response.serverError().build();
 		}
 		
@@ -31,8 +31,6 @@ public class GetClientSignaturesListApiServiceImpl {
 		}
 		Document doc = new Document();
 		doc.put("data", signatureListFiltered);
-
-		dbm.close();
 		
 		return Response.ok(doc.toJson()).build();
 	}

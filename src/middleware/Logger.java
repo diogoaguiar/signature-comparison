@@ -77,4 +77,8 @@ public class Logger {
 		System.out.println("Stacktrace:");
 		e.printStackTrace();
 	}
+
+	public static void msg(String msg) {
+		System.out.println(msg);
+	}
 }

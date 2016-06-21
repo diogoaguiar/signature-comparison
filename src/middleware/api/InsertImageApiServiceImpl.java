@@ -33,6 +33,7 @@ public class InsertImageApiServiceImpl extends InsertImageApiService {
 		try {
 			DBManager dbm = new DBManager();
 			if (!dbm.isConnected()) {
+				Logger.error("Not connected to the database");
 				return Response.serverError().build();
 			}
 
@@ -41,7 +42,6 @@ public class InsertImageApiServiceImpl extends InsertImageApiService {
 			Img image = new Img(imageBase64);
 			String name = data.getName();
 			dbm.insertImage(collection, image, name);
-			dbm.close();
 
 			return Response.status(201).build();
 		} catch (Exception e) {
